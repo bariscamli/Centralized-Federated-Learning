@@ -1,7 +1,11 @@
 # Centralized Federated Learning
 
-_Centralized Federated Learning using WebSockets and TensorFlow. Lenet is preferred for computer vision model due to simplicity. CIFAR-10 and MNIST are used as dataset._
+_Federated learning is a distributed machine learning technique to train neural network models across edge devices with small amount of data; instead, training model in cloud or server with centralized, big data corpus. In this project, I implemented an application that clients can interact with a server to be part of federated learning. Server is responsible for receiving, sending, and aggregating neural network models. The clients are only assigned to training corresponding model with their local data. I used Centralized Federated Learning using WebSockets and TensorFlow. Lenet is preferred for computer vision model due to simplicity. CIFAR-10 and MNIST are used as dataset._
 
+* <div>More details about implementation and test results can be found in the <a href="https://github.com/bariscamli/federated-learning/blob/main/Centralized%20Federated%20Learning.pdf" title="Report">Project Report</a></div>
+
+
+![Centralized Federated Learning](https://github.com/bariscamli/federated-learning/blob/main/image.png?raw=true)
 
 - Install the dependencies:
 
