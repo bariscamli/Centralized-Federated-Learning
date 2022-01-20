@@ -21,8 +21,7 @@ python client.py <client_id> <number_of_local_epoch>
 
 ## References
 * <div>WebSocket implementation adopted by <a href="https://github.com/DhanshreeA/europython-minimal-fl" title="europython-minimal-fl">europython-minimal-fl</a></div>
-* <div>Aggregation method (FedAvg) taken from <a href="https://arxiv.org/pdf/1602.05629.pdf" title="Communication-Efficient Learning of Deep Networks
-from Decentralized Data">Communication-Efficient Learning of Deep Networks
+* <div>Aggregation method (FedAvg) taken from <a href="https://arxiv.org/pdf/1602.05629.pdf" title="Article">Communication Efficient Learning of Deep Networks
 from Decentralized Data</a></div>
 * <div>MNIST Dataset taken from <a href="https://www.tensorflow.org/datasets/catalog/mnist" title="MNIST">MNIST</a></div>
 * <div>CIFAR-10 Dataset taken from <a href="https://www.tensorflow.org/datasets/catalog/cifar10" title="CIFAR-10">CIFAR10</a></div>
