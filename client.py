@@ -1,20 +1,23 @@
-import socketio
-from tensorflow.keras.models import model_from_json
-from utils.train import get_data
-from utils.model_utils import encode_layer,decode
 import sys
-from sklearn.metrics import accuracy_score
-import numpy as np
-from sklearn.metrics import confusion_matrix
+import socketio
 
-class Node:
-    def __init__(self, address, client, epochs=10):
+import numpy as np
+from tensorflow.keras.models import model_from_json
+from sklearn.metrics import accuracy_score
+
+from utils.training import get_data
+from utils.model_utils import encode_layer, decode
+
+
+
+class Client:
+    def __init__(self, address, client, epochs):
         self.client = client
         self.server = address
         self.sio = socketio.Client()
         self.register_handles()
 
-        self.X_train, self.y_train, self.X_test, self.y_test = get_data(self.client,'cifar_10','non_iid')
+        self.X_train, self.y_train, self.X_test, self.y_test = get_data(self.client, 'mnist', 'non_iid', 'unbalanced')
         self.model = None
         self.epochs = epochs
 
@@ -33,10 +36,9 @@ class Node:
         self.model.compile(optimizer='sgd', loss='categorical_crossentropy', metrics=['accuracy'])
         self.model.set_weights(decode(global_model["model_weights"]))
         print("Starting training")
-        self.model.fit(self.X_train,self.y_train,epochs=self.epochs,batch_size=10)
+        self.model.fit(self.X_train, self.y_train, epochs=self.epochs, batch_size=10)
         y_pred = self.model.predict(self.X_test)
-        print('Accuracy: ',accuracy_score(self.y_test,np.argmax(y_pred, axis=1)))
-        #print(confusion_matrix(self.y_test,  np.argmax(y_pred, axis=1)))
+        print('Accuracy: ', accuracy_score(self.y_test, np.argmax(y_pred, axis=1)))
         self.send_updates()
 
     def send_updates(self):
@@ -45,9 +47,10 @@ class Node:
             if layer.trainable_weights:
                 model_weights[layer.name] = encode_layer(layer.get_weights())
 
-        self.sio.emit("fl_update",data=model_weights)
+        self.sio.emit("fl_update", data=model_weights)
 
     def disconnect(self):
+        self.model.save("lenet_5.h5")
         return
 
     def end_session(self, data):
@@ -56,5 +59,5 @@ class Node:
 
 
 if __name__ == "__main__":
-    node = Node(address="http://0.0.0.0:5000", client="client"+str(sys.argv[1]), epochs=10)
+    node = Client(address="http://0.0.0.0:5000", client="client" + str(sys.argv[1]), epochs=1)
     node.connect()

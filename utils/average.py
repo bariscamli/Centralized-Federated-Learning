@@ -1,6 +1,8 @@
 import h5py
 import os
 
+
+# FedAvg for h5 files. (Not used in this project)
 class Aggregator:
     def __init__(self,type='average'):
         self.type=type

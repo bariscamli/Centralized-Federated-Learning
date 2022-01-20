@@ -1,17 +1,18 @@
 import asyncio
+import socketio
+
 from concurrent.futures import ThreadPoolExecutor
 from sklearn.metrics import accuracy_score
 from aiohttp import web
-import socketio
-from utils.model_utils import encode_layer, decode
-from utils.train import get_model_cifar, get_data, get_model_mnist
 import numpy as np
 
+from utils.model_utils import encode_layer, decode
+from utils.training import get_model, get_data
 
 
 class Server:
-    def __init__(self, req_nodes=10, comunication_rounds=10):
-        self.sio = socketio.AsyncServer(async_mode="aiohttp")
+    def __init__(self, req_nodes, comunication_rounds):
+        self.sio = socketio.AsyncServer(async_mode="aiohttp", ping_timeout=120)
         self.app = web.Application()
         self.sio.attach(self.app)
         self.register_handles()
@@ -22,8 +23,8 @@ class Server:
         self.training_room = "training_room"
         self.average_weights = dict()
 
-        _, _, self.X_test, self.y_test = get_data('server','cifar_10','non_iid')
-        self.global_model = get_model_cifar()
+        _, _, self.X_test, self.y_test = get_data('server', 'mnist', 'non_iid', 'unbalanced')
+        self.global_model = get_model("mnist")
         self.max_rounds = comunication_rounds
         self.round = 0
         self.pool = ThreadPoolExecutor(max_workers=4)
@@ -55,12 +56,12 @@ class Server:
 
     def evaluate(self):
         y_pred = self.global_model.predict(self.X_test)
-        print('Accuracy: ',accuracy_score(self.y_test,np.argmax(y_pred, axis=1)))
+        print('Accuracy: ', accuracy_score(self.y_test, np.argmax(y_pred, axis=1)))
 
     async def fl_update(self, sid, data):
         for layer in data.keys():
             temp_weight = decode(data[layer])
-            if len(self.average_weights[layer]) == 2 :
+            if len(self.average_weights[layer]) == 2:
                 self.average_weights[layer][0] += (temp_weight[0] / len(self.connected_nodes))
                 self.average_weights[layer][1] += (temp_weight[1] / len(self.connected_nodes))
             else:
@@ -71,21 +72,19 @@ class Server:
             loop = asyncio.get_event_loop()
             asyncio.ensure_future(self.async_consume(loop))
 
-    def consume_updates(self):
-        print("Consuming updates")
+    def apply_updates(self):
+        print("Applying updates to global model")
         for layer in self.global_model.layers:
             if layer.trainable_weights:
                 layer.set_weights(self.average_weights[layer.name])
         self.evaluate()
 
     def async_consume(self, loop):
-        yield from loop.run_in_executor(self.pool, self.consume_updates)
-        # Hijack the event loop to enter end_round coroutine in the same thread
-        # synchronously after all updates have been consumed.
+        yield from loop.run_in_executor(self.pool, self.apply_updates)
         loop.create_task(self.end_round())
 
     async def start_round(self):
-        print(f'Starting round {self.round+1}')
+        print(f'Starting round {self.round + 1}')
         self.pending_nodes = self.connected_nodes.copy()
         for layer in self.global_model.layers:
             if layer.trainable_weights:
@@ -123,5 +122,5 @@ class Server:
 
 
 if __name__ == "__main__":
-    fl_server = Server()
+    fl_server = Server(req_nodes=2, comunication_rounds=1)
     fl_server.run_server()
