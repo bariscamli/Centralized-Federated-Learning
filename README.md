@@ -30,6 +30,11 @@ from Decentralized Data</a></div>
 * <div>MNIST Dataset taken from <a href="https://www.tensorflow.org/datasets/catalog/mnist" title="MNIST">MNIST</a></div>
 * <div>CIFAR-10 Dataset taken from <a href="https://www.tensorflow.org/datasets/catalog/cifar10" title="CIFAR-10">CIFAR10</a></div>
 
+## License
+
+This project is licensed under the terms of the Baris Camli License.
+
+
 
 
 
