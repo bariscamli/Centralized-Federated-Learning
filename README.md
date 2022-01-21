@@ -5,7 +5,7 @@ _Federated learning is a distributed machine learning technique to train neural 
 <div>More details about implementation and test results can be found in the <a href="https://github.com/bariscamli/federated-learning/blob/main/Centralized%20Federated%20Learning.pdf" title="Report">Project Report</a></div>
 
 
-![Centralized Federated Learning](https://github.com/bariscamli/federated-learning/blob/main/image.png?raw=true)
+![Centralized Federated Learning](https://github.com/bariscamli/federated-learning/blob/main/images/image.png?raw=true)
 
 ## Setup
 
@@ -28,11 +28,11 @@ python client.py <client_id> <number_of_local_epoch>
 ## Demo
 - Server
 
-![](server.gif)
+![](images/server.gif)
 
 - Client
 
-![](client.gif)
+![](images/client.gif)
 
 ## References
 * <div>WebSocket implementation adopted by <a href="https://github.com/DhanshreeA/europython-minimal-fl" title="europython-minimal-fl">europython-minimal-fl</a></div>
